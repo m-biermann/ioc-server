@@ -14,9 +14,12 @@ namespace mabiphmo::iocServer::construction {
 		ioc::Container &container_;
 		std::tuple<std::unique_ptr<IServiceArg<TArgs>>...> args_;
 	public:
-		explicit ServiceArgRelation(ioc::Container &container, std::unique_ptr<IServiceArg<TArgs>>&&...args) : container_(container), args_(std::move(args)...) {}
+		explicit ServiceArgRelation(ioc::Container &container, std::unique_ptr<IServiceArg<TArgs>>&&...args) : container_(container)
+		{
+			args_ = std::tuple<std::unique_ptr<IServiceArg<TArgs>>...>(std::move(args)...);
+		}
 		std::shared_ptr<TService> operator()() override{
-			return std::apply([this](auto&&...args) -> std::shared_ptr<TService>{return container_.GetInstance<TService>(args()...);}, args_);
+			return std::apply([this](auto&&...args) -> std::shared_ptr<TService>{return container_.GetInstance<TService>((*args)()...);}, args_);
 		}
 	};
 }

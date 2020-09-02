@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.16)
-project(iocServer)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -9,12 +8,21 @@ else()
     add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
 
-include_directories(include)
+add_library(iocServer src/main.cpp src/construction/AppBuilder.cpp src/construction/AppBuilder.h src/Server.cpp src/Server.h src/ThreadRunner.cpp src/ThreadRunner.h)
 
-add_library(iocServer src/main.cpp include/mabiphmo/iocServer/construction/IAppBuilder.h include/mabiphmo/iocServer/service/IStartableService.h src/construction/AppBuilder.cpp src/construction/AppBuilder.h src/Server.cpp src/Server.h include/mabiphmo/iocServer/main.h src/ThreadRunner.cpp src/ThreadRunner.h include/mabiphmo/iocServer/construction/IServiceArg.h include/mabiphmo/iocServer/construction/ServiceArgRelation.h include/mabiphmo/iocServer/construction/ServiceArgBaseCast.h)
+target_include_directories(iocServer PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
-target_link_libraries(iocServer PRIVATE Threads::Threads)
+target_link_libraries(iocServer PRIVATE Threads::Threads PUBLIC ${PROJECT_NAME}::ioc)
+
+add_library(${PROJECT_NAME}::iocServer ALIAS iocServer)
 
 add_subdirectory(test)
+
+include(GNUInstallDirs)
+install(TARGETS iocServer
+        EXPORT ${PROJECT_NAME}Targets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}
+)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/mabiphmo TYPE INCLUDE)

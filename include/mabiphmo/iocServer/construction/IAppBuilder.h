@@ -9,7 +9,7 @@
 #include <mabiphmo/iocServer/service/IStartableService.h>
 #include <mabiphmo/iocServer/construction/IServiceArg.h>
 #include <mabiphmo/iocServer/construction/ServiceArgRelation.h>
-#include <mabiphmo/iocServer/construction/ServiceArgBaseCast.h>
+#include <mabiphmo/iocServer/construction/ServiceArgPointerBaseCast.h>
 
 namespace mabiphmo::iocServer::construction {
 	class IAppBuilder {
@@ -21,7 +21,7 @@ namespace mabiphmo::iocServer::construction {
 				typename... TArgs>
 		IAppBuilder &WithService(TArgs &&...args){
 			if constexpr(std::is_base_of<service::IStartableService, TService>::value){
-				WithStartableService(std::unique_ptr<IServiceArg<std::shared_ptr<service::IStartableService>>>(new ServiceArgBaseCast<service::IStartableService, TService>(ServiceArgRelationFactory<TService>())));
+				WithStartableService(std::unique_ptr<IServiceArg<std::shared_ptr<service::IStartableService>>>(new ServiceArgPointerBaseCast<service::IStartableService, TService>(ServiceArgRelationFactory<TService>())));
 			}
 			IoCContainer().RegisterSingletonClassFactory<TService, TDependencies...>(std::forward<TArgs>(args) ...);
 			return *this;
@@ -32,7 +32,7 @@ namespace mabiphmo::iocServer::construction {
 				typename... TArgs>
 		IAppBuilder &WithServiceOnInterface(TArgs &&...args){
 			if constexpr(std::is_base_of<service::IStartableService, TInterface>::value){
-				WithStartableService(std::unique_ptr<IServiceArg<std::shared_ptr<service::IStartableService>>>(new ServiceArgBaseCast<service::IStartableService, TInterface>(ServiceArgRelationFactory<TInterface>())));
+				WithStartableService(std::unique_ptr<IServiceArg<std::shared_ptr<service::IStartableService>>>(new ServiceArgPointerBaseCast<service::IStartableService, TInterface>(ServiceArgRelationFactory<TInterface>())));
 			}
 			IoCContainer().RegisterSingletonClassFactoryOnInterface<TInterface, TService, TDependencies...>(std::forward<TArgs>(args)...);
 			return *this;
@@ -58,7 +58,12 @@ namespace mabiphmo::iocServer::construction {
 
 		template <class T, typename...TArgs>
 		std::unique_ptr<IServiceArg<std::shared_ptr<T>>> ServiceArgRelationFactory(std::unique_ptr<IServiceArg<TArgs>>&&...args){
-			return std::unique_ptr<IServiceArg<std::shared_ptr<T>>>(new ServiceArgRelation<T>(IoCContainer(), std::move(args)...));
+			return std::make_unique<ServiceArgRelation<T, TArgs...>>(IoCContainer(), std::move(args)...);
+		}
+
+		template <class TBase, class T, typename...TArgs>
+		std::unique_ptr<IServiceArg<std::shared_ptr<TBase>>> ServiceArgBaseRelationFactory(std::unique_ptr<IServiceArg<TArgs>>&&...args){
+			return std::make_unique<ServiceArgPointerBaseCast<TBase, T>>(ServiceArgRelationFactory<T, TArgs...>(std::move(args)...));
 		}
 
 		virtual IAppBuilder &WithStartableService(std::unique_ptr<IServiceArg<std::shared_ptr<service::IStartableService>>>&& factory) = 0;

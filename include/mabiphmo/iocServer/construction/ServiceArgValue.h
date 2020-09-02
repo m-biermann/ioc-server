@@ -12,7 +12,7 @@ namespace mabiphmo::iocServer::construction {
 	class ServiceArgValue : public IServiceArg<TArg> {
 		TArg &&value_;
 	public:
-		explicit ServiceArgValue(TArg &&value) : value_(std::forward(value)) {}
+		explicit ServiceArgValue(TArg &&value) : value_(std::forward<TArg>(value)) {}
 
 		TArg operator()() override {
 			return std::forward<TArg>(value_);
