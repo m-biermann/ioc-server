@@ -4,3 +4,5 @@ add_executable (iocServerTests ServerTests.cpp structs.h IStartableServiceTests.
 
 target_link_libraries(iocServerTests PRIVATE ${Boost_LIBRARIES} Threads::Threads ${PROJECT_NAME}::iocServer)
 target_include_directories(iocServerTests PRIVATE ${Boost_INCLUDE_DIRS})
+
+add_test(NAME iocServerTests COMMAND iocServerTests)
