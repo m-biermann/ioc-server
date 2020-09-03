@@ -11,7 +11,7 @@ endif()
 add_library(iocServer src/main.cpp src/construction/AppBuilder.cpp src/construction/AppBuilder.h src/Server.cpp src/Server.h src/ThreadRunner.cpp src/ThreadRunner.h)
 
 target_include_directories(iocServer PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}> PUBLIC ${Boost_INCLUDE_DIR})
 
 target_link_libraries(iocServer PRIVATE Threads::Threads PUBLIC ${PROJECT_NAME}::ioc)
 
