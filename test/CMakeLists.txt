@@ -1,8 +1,10 @@
 # 'Boost_Tests_run' is the target name
 # 'test1.cpp tests2.cpp' are source files with tests
-add_executable (iocServerTests ServerTests.cpp structs.h IStartableServiceTests.cpp AppBuilderTests.cpp )
 
-target_link_libraries(iocServerTests PRIVATE ${Boost_LIBRARIES} Threads::Threads ${PROJECT_NAME}::iocServer)
-target_include_directories(iocServerTests PRIVATE ${Boost_INCLUDE_DIRS})
+find_package(Boost REQUIRED COMPONENTS unit_test_framework)
 
-add_test(NAME iocServerTests COMMAND iocServerTests)
+add_executable (${PROJECT_NAME}Tests ServerTests.cpp structs.h IStartableServiceTests.cpp AppBuilderTests.cpp)
+target_link_libraries (${PROJECT_NAME}Tests PRIVATE ${Boost_LIBRARIES} ${PROJECT_NAME} Threads::Threads)
+target_include_directories (${PROJECT_NAME}Tests PRIVATE ${Boost_INCLUDE_DIRS})
+
+add_test (NAME ${PROJECT_NAME}Tests COMMAND ${PROJECT_NAME}Tests)
