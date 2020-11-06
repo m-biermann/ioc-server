@@ -5,7 +5,7 @@
 #ifndef IOCSERVER_MAIN_H
 #define IOCSERVER_MAIN_H
 
-#include <mabiphmo/iocServer/construction/IAppBuilder.h>
+#include <mabiphmo/ioc-server/construction/IAppBuilder.h>
 #include <functional>
 
 bool Startup(int argc, char *argv[]);

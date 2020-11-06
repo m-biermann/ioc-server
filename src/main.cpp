@@ -2,7 +2,7 @@
 // Created by max on 8/14/20.
 //
 
-#include <mabiphmo/iocServer/main.h>
+#include <mabiphmo/ioc-server/main.h>
 #include <iostream>
 #include "construction/AppBuilder.h"
 

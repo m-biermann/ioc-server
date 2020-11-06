@@ -5,7 +5,7 @@
 #ifndef IOCSERVER_STRUCTS_H
 #define IOCSERVER_STRUCTS_H
 
-#include <mabiphmo/iocServer/service/IStartableService.h>
+#include <mabiphmo/ioc-server/service/IStartableService.h>
 #include <iostream>
 
 class StartableServiceOne : public mabiphmo::iocServer::service::IStartableService {

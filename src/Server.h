@@ -5,7 +5,7 @@
 #ifndef IOCSERVER_SERVER_H
 #define IOCSERVER_SERVER_H
 
-#include <mabiphmo/iocServer/service/IStartableService.h>
+#include <mabiphmo/ioc-server/service/IStartableService.h>
 #include <vector>
 #include <memory>
 #include "ThreadRunner.h"

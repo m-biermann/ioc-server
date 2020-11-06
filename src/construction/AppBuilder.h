@@ -5,7 +5,7 @@
 #ifndef IOCSERVER_APPBUILDER_H
 #define IOCSERVER_APPBUILDER_H
 
-#include <mabiphmo/iocServer/construction/IAppBuilder.h>
+#include <mabiphmo/ioc-server/construction/IAppBuilder.h>
 #include "../Server.h"
 
 namespace mabiphmo::iocServer::construction{

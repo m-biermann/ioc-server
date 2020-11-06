@@ -6,7 +6,7 @@
 #define IOCSERVER_IAPPBUILDER_H
 
 #include <mabiphmo/ioc-container/Container.h>
-#include <mabiphmo/iocServer/service/IStartableService.h>
+#include <mabiphmo/ioc-server/service/IStartableService.h>
 
 namespace mabiphmo::iocServer::construction {
 	class IAppBuilder {
