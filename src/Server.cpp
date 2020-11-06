@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <boost/bind.hpp>
 
-namespace mabiphmo::iocServer{
+namespace mabiphmo::ioc_server{
 
 	Server::Server(std::shared_ptr<ThreadRunner> threadRunner, std::vector<std::shared_ptr<service::IStartableService>> &&startableServices) :
 		threadRunner_(std::move(threadRunner)),

@@ -9,7 +9,7 @@
 #include <functional>
 
 bool Startup(int argc, char *argv[]);
-void Configure(mabiphmo::iocServer::construction::IAppBuilder &builder);
+void Configure(mabiphmo::ioc_server::construction::IAppBuilder &builder);
 void ConfigureShutdown(std::function<void()> &&shutdownFunc);
 
 #endif //IOCSERVER_MAIN_H

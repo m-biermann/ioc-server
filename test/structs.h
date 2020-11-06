@@ -8,7 +8,7 @@
 #include <mabiphmo/ioc-server/service/IStartableService.h>
 #include <iostream>
 
-class StartableServiceOne : public mabiphmo::iocServer::service::IStartableService {
+class StartableServiceOne : public mabiphmo::ioc_server::service::IStartableService {
 	bool &start_;
 	bool &stop_;
 protected:

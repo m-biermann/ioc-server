@@ -8,9 +8,9 @@
 
 int main(int argc, char *argv[]){
 	if(Startup(argc, argv)){
-		mabiphmo::iocServer::construction::AppBuilder builder((mabiphmo::ioc_container::Container()));
+		mabiphmo::ioc_server::construction::AppBuilder builder((mabiphmo::ioc_container::Container()));
 		Configure(builder);
-		std::shared_ptr<mabiphmo::iocServer::Server> server = builder.Build();
+		std::shared_ptr<mabiphmo::ioc_server::Server> server = builder.Build();
 		ConfigureShutdown([&server](){server->Stop();});
 		server->Start();
 	}

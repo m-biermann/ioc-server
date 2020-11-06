@@ -5,7 +5,7 @@
 #include "AppBuilder.h"
 #include <boost/asio/io_context.hpp>
 
-namespace mabiphmo::iocServer::construction{
+namespace mabiphmo::ioc_server::construction{
 	AppBuilder::AppBuilder(ioc_container::Container &&container) : container_(std::move(container)), threadCount_(50)
 	{
 		auto ioContextHolder = container_.RegisterType(

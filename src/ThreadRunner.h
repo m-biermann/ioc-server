@@ -10,7 +10,7 @@
 #include <vector>
 #include <boost/asio/io_context.hpp>
 
-namespace mabiphmo::iocServer {
+namespace mabiphmo::ioc_server {
 	class ThreadRunner : public service::IStartableService {
 		std::shared_ptr<boost::asio::io_context> ioContext_;
 		unsigned int count_;

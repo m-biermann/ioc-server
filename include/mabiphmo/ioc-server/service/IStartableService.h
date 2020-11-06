@@ -7,7 +7,7 @@
 
 #include <mutex>
 
-namespace mabiphmo::iocServer::service{
+namespace mabiphmo::ioc_server::service{
 	class IStartableService{
 	protected:
 		bool running_ = false;

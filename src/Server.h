@@ -10,7 +10,7 @@
 #include <memory>
 #include "ThreadRunner.h"
 
-namespace mabiphmo::iocServer {
+namespace mabiphmo::ioc_server {
 class Server : public service::IStartableService, std::enable_shared_from_this<Server> {
 		std::shared_ptr<ThreadRunner> threadRunner_;
 		std::vector<std::shared_ptr<service::IStartableService>> startableServices_;

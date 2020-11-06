@@ -4,7 +4,7 @@
 
 #include "ThreadRunner.h"
 
-namespace mabiphmo::iocServer{
+namespace mabiphmo::ioc_server{
 	ThreadRunner::ThreadRunner(std::shared_ptr<boost::asio::io_context> ioContext, unsigned int count) : ioContext_(std::move(ioContext)), count_(count) {}
 
 	void ThreadRunner::onStop()

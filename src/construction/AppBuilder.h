@@ -8,7 +8,7 @@
 #include <mabiphmo/ioc-server/construction/IAppBuilder.h>
 #include "../Server.h"
 
-namespace mabiphmo::iocServer::construction{
+namespace mabiphmo::ioc_server::construction{
 	class AppBuilder : public IAppBuilder {
 		ioc_container::Container container_;
 		unsigned int threadCount_;

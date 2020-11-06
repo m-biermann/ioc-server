@@ -8,7 +8,7 @@
 #include <mabiphmo/ioc-container/Container.h>
 #include <mabiphmo/ioc-server/service/IStartableService.h>
 
-namespace mabiphmo::iocServer::construction {
+namespace mabiphmo::ioc_server::construction {
 	class IAppBuilder {
 	public:
 		virtual IAppBuilder &WithThreadCount(unsigned int count) = 0;
