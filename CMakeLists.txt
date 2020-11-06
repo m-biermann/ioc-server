@@ -25,13 +25,15 @@ if(DEFINED ENV{Boost_DEBUG})
     set(Boost_DEBUG $ENV{Boost_DEBUG})
 endif()
 
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
-
 if(NOT DEFINED PACKAGE_NAME)
     message(STATUS "Searching for ioc-container")
     find_package(ioc-container REQUIRED)
 endif()
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
+find_package(Boost REQUIRED)
 
 add_library(${PROJECT_NAME} src/main.cpp src/construction/AppBuilder.cpp src/construction/AppBuilder.h src/Server.cpp src/Server.h src/ThreadRunner.cpp src/ThreadRunner.h)
 
