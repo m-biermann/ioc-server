@@ -10,15 +10,16 @@
 
 namespace mabiphmo::iocServer::construction{
 	class AppBuilder : public IAppBuilder {
-		ioc::Container container_;
+		ioc_container::Container container_;
 		unsigned int threadCount_;
-		std::vector<std::unique_ptr<IServiceArg<std::shared_ptr<service::IStartableService>>>> iIoServiceFactories_;
+		std::vector<std::function<std::shared_ptr<service::IStartableService>()>> iIoServiceFactories_;
 	public:
-		ioc::Container &IoCContainer() override;
-		explicit AppBuilder(ioc::Container &&container);
+		ioc_container::Container &IoCContainer() override;
+		explicit AppBuilder(ioc_container::Container &&container);
 		std::shared_ptr<Server> Build();
 		IAppBuilder &WithThreadCount(unsigned int count) override;
-		IAppBuilder &WithStartableService(std::unique_ptr<IServiceArg<std::shared_ptr<service::IStartableService>>>&& factory) override;
+
+		IAppBuilder &WithStartableService(std::function<std::shared_ptr<service::IStartableService>()> && serviceFactory) override;
 	};
 }
 

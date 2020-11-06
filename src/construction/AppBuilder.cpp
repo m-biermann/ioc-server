@@ -6,31 +6,73 @@
 #include <boost/asio/io_context.hpp>
 
 namespace mabiphmo::iocServer::construction{
-	AppBuilder::AppBuilder(ioc::Container &&container) : container_(std::move(container)), threadCount_(50)
+	AppBuilder::AppBuilder(ioc_container::Container &&container) : container_(std::move(container)), threadCount_(50)
 	{
-		WithService<boost::asio::io_context>(50);
+		auto ioContextHolder = container_.RegisterType(
+			ioc_container::TypeHolder<boost::asio::io_context>(
+				ioc_container::Scope::Singleton,
+				std::function<std::shared_ptr<boost::asio::io_context>(int)>(
+					[](int concurrency)
+					{
+						return std::make_shared<boost::asio::io_context>(concurrency);
+					})));
+		ioContextHolder->SetFactory(
+			std::function<std::shared_ptr<boost::asio::io_context>()>(
+				[parameterFactory = ioContextHolder->GetFactory<int>()]()
+				{
+					return (*parameterFactory)(50);
+				}));
+		container_.RegisterType(
+			ioc_container::TypeHolder<ThreadRunner>(
+				ioc_container::Scope::Singleton,
+				std::function<std::shared_ptr<ThreadRunner>()>(
+					[&ioc_container = std::as_const(container_),
+	                    &count = threadCount_]()
+                    {
+						return std::make_shared<ThreadRunner>(
+							ioc_container.GetTypeHolder<boost::asio::io_context>()->Get(),
+							count);
+                    })));
+		container_.RegisterType(
+			ioc_container::TypeHolder<Server>(
+				ioc_container::Scope::Factory,
+				std::function<std::shared_ptr<Server>(std::vector<std::shared_ptr<service::IStartableService>> &&)>(
+					[&ioc_container = std::as_const(container_)](
+						std::vector<std::shared_ptr<service::IStartableService>> && startableServices)
+					{
+						return std::make_shared<Server>(
+							ioc_container.GetTypeHolder<ThreadRunner>()->Get(),
+							std::move(startableServices));
+					})));
 	}
 
 	std::shared_ptr<Server> AppBuilder::Build() {
-		std::vector<std::shared_ptr<service::IStartableService>> iStartableServices = std::vector<std::shared_ptr<service::IStartableService>>();
-		for(std::unique_ptr<IServiceArg<std::shared_ptr<service::IStartableService>>> &factory : iIoServiceFactories_){
-			iStartableServices.push_back((*factory)());
+		std::vector<std::shared_ptr<service::IStartableService>> iStartableServices;
+		for(std::function<std::shared_ptr<service::IStartableService>()> &factory : iIoServiceFactories_){
+			iStartableServices.push_back(factory());
 		}
-		return std::make_shared<Server>(std::make_shared<ThreadRunner>(IoCContainer().GetInstance<boost::asio::io_context>(), threadCount_), std::move(iStartableServices));
+		return IoCContainer().GetTypeHolder<Server>()->Get(std::move(iStartableServices));
 	}
 
-	ioc::Container &AppBuilder::IoCContainer() {
+	ioc_container::Container &AppBuilder::IoCContainer() {
 		return container_;
 	}
 
 	IAppBuilder &AppBuilder::WithThreadCount(unsigned int count) {
 		threadCount_ = count;
-		return WithService<boost::asio::io_context>(count);
+		auto ioContextHolder = IoCContainer().GetTypeHolder<boost::asio::io_context>();
+		ioContextHolder->SetFactory(
+			std::function<std::shared_ptr<boost::asio::io_context>()>(
+				[parameterFactory = ioContextHolder->GetFactory<int>(), count]()
+				{
+					return (*parameterFactory)(count);
+				}));
+		return *this;
 	}
 
-	IAppBuilder &AppBuilder::WithStartableService(std::unique_ptr<IServiceArg<std::shared_ptr<service::IStartableService>>> &&factory)
+	IAppBuilder &AppBuilder::WithStartableService(std::function<std::shared_ptr<service::IStartableService>()> && serviceFactory)
 	{
-		iIoServiceFactories_.push_back(std::move(factory));
+		iIoServiceFactories_.push_back(std::move(serviceFactory));
 		return *this;
 	}
 }
