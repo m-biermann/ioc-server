@@ -179,7 +179,7 @@ jobs:
         
     - name: Extract ioc-container Build
       shell: bash
-      run: tar xzfv ${{runner.workspace}}${{ matrix.path-delimiter }}Build.zip  -C ${{ steps.vars.outputs.LIBS_DIR }}
+      run: unzip ${{runner.workspace}}${{ matrix.path-delimiter }}Build.zip  -d ${{ steps.vars.outputs.LIBS_DIR }}
     
     - name: LIB_DIR contents
       shell: bash
