@@ -84,25 +84,25 @@ jobs:
       if: steps.cache.outputs.cache-hit != 'true' || (github.event.inputs.Build-Boost-WIN == 'true' && matrix.os == 'windows-latest') || (github.event.inputs.Build-Boost-UBU == 'true' && matrix.os == 'ubuntu-latest')
       working-directory: ${{runner.workspace}}${{ matrix.path-delimiter }}boost
       shell: bash
-      run: "([ -f boost_${{ env.Boost_Version }}.tar.gz ] && echo 'Skipped [done already]') || curl -LO https://dl.bintray.com/boostorg/release/${{ env.Boost_Version_DOT }}/source/boost_${{ env.Boost_Version }}.tar.gz"
+      run: "curl -LO https://dl.bintray.com/boostorg/release/${{ env.Boost_Version_DOT }}/source/boost_${{ env.Boost_Version }}.tar.gz"
 
     - name: Extract Boost
       if: steps.cache.outputs.cache-hit != 'true' || (github.event.inputs.Build-Boost-WIN == 'true' && matrix.os == 'windows-latest') || (github.event.inputs.Build-Boost-UBU == 'true' && matrix.os == 'ubuntu-latest')
       working-directory: ${{runner.workspace}}${{ matrix.path-delimiter }}boost
       shell: bash
-      run: "([ -d boost_${{ env.Boost_Version }} ] && echo 'Skipped [done already]') || tar xzvf boost_${{ env.Boost_Version }}.tar.gz"
+      run: "tar xzvf boost_${{ env.Boost_Version }}.tar.gz"
 
     - name: Bootstrap Boost
       if: steps.cache.outputs.cache-hit != 'true' || (github.event.inputs.Build-Boost-WIN == 'true' && matrix.os == 'windows-latest') || (github.event.inputs.Build-Boost-UBU == 'true' && matrix.os == 'ubuntu-latest')
       working-directory: ${{runner.workspace}}${{ matrix.path-delimiter }}boost${{ matrix.path-delimiter }}boost_${{ env.Boost_Version }}
       shell: bash
-      run: "([ -f b2 ] && echo 'Skipped [done already]') || ./bootstrap.${{ matrix.script-file-type }} --prefix=${{ steps.vars.outputs.BOOST_DIR }}"
+      run: "./bootstrap.${{ matrix.script-file-type }} --prefix=${{ steps.vars.outputs.BOOST_DIR }}"
 
     - name: Build Boost
       if: steps.cache.outputs.cache-hit != 'true' || (github.event.inputs.Build-Boost-WIN == 'true' && matrix.os == 'windows-latest') || (github.event.inputs.Build-Boost-UBU == 'true' && matrix.os == 'ubuntu-latest')
       working-directory: ${{runner.workspace}}${{ matrix.path-delimiter }}boost${{ matrix.path-delimiter }}boost_${{ env.Boost_Version }}
       shell: bash
-      run: "([ -d stage ] && echo 'Skipped [done already]') || ./b2"
+      run: "./b2"
 
     - name: Install boost
       if: steps.cache.outputs.cache-hit != 'true' || (github.event.inputs.Build-Boost-WIN == 'true' && matrix.os == 'windows-latest') || (github.event.inputs.Build-Boost-UBU == 'true' && matrix.os == 'ubuntu-latest')
@@ -132,22 +132,27 @@ jobs:
       id: vars
       shell: bash
       run: |
+        boost_loc="${{runner.workspace}}${{ matrix.path-delimiter }}boost_out"
+        libs_loc="${{runner.workspace}}${{ matrix.path-delimiter }}libs"
         if [ ${{matrix.os}} = "windows-latest" ]; then
-          boost_loc="${{runner.workspace}}${{ matrix.path-delimiter }}boost_out"
-          echo "boost_loc pre: $boost_loc"
-          boost_loc="${boost_loc//\\//}"
-          echo "boost_loc post: $boost_loc"
           gcc_loc="$(where gcc)"
-          gcc_loc="${gcc_loc//\\//}"
           gxx_loc="$(where g++)"
-          gxx_loc="${gxx_loc//\\//}"
         elif [ ${{matrix.os}} = "ubuntu-latest" ]; then
-          boost_loc="${{runner.workspace}}${{ matrix.path-delimiter }}boost_out"
           gcc_loc="$(which gcc)"
           gxx_loc="$(which g++)"
         fi
+        
+        if [ ${{matrix.os}} = "windows-latest" ]; then
+          boost_loc="${boost_loc//\\//}"
+          libs_loc="${libs_loc//\\//}"
+          gcc_loc="${gcc_loc//\\//}"
+          gxx_loc="${gxx_loc//\\//}"
+        fi
+        
         echo "boost_loc: $boost_loc"
         echo "::set-output name=BOOST_DIR::$boost_loc"
+        echo "libs_loc: $libs_loc"
+        echo "::set-output name=LIBS_DIR::$libs_loc"
         echo "gcc_loc: $gcc_loc"
         echo "::set-output name=GCC_PATH::$gcc_loc"
         echo "gxx_loc: $gxx_loc"
@@ -163,6 +168,18 @@ jobs:
     - name: Boost not found!
       if: steps.cache.outputs.cache-hit != 'true'
       run: echo "steps.cache.outputs.cache-hit ${{steps.cache.outputs.cache-hit}}"; exit 1
+      
+    - name: Download ioc-container Build
+      uses: i3h/download-release-asset@v1.2.0
+      with:
+        owner: m-biermann
+        repo: ioc-container
+        tag: v0.1.0-alpha
+        file: Build.zip
+        
+    - name: Extract ioc-container Build
+      shell: bash
+      run: "tar xzfv ${{runner.workspace}}${{ matrix.path-delimiter }}Build.zip  -C ${{ steps.vars.outputs.LIBS_DIR }}; ls -laR ${{ steps.vars.outputs.BOOST_DIR }}"
 
     - name: Create Build Environment
       # Some projects don't allow in-source building, so create a separate build directory
