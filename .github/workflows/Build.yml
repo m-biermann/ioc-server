@@ -169,14 +169,17 @@ jobs:
       if: steps.cache.outputs.cache-hit != 'true'
       run: echo "steps.cache.outputs.cache-hit ${{steps.cache.outputs.cache-hit}}"; exit 1
       
-    - name: Download and extract(?) ioc-container Build.zip
+    - name: Download and ioc-container Build.zip
       uses: robinraju/release-downloader@v1
       with:
         tag: v0.1.0-alpha
         fileName: Build.zip
         repository: m-biermann/ioc-container
-        zipBall: true
-        out-file-path: ${{ steps.vars.outputs.LIBS_DIR }}
+        out-file-path: ${{runner.workspace}}
+        
+    - name: Extract ioc-container Build
+      shell: bash
+      run: tar xzfv ${{runner.workspace}}${{ matrix.path-delimiter }}Build.zip  -C ${{ steps.vars.outputs.LIBS_DIR }}
     
     - name: LIB_DIR contents
       shell: bash
