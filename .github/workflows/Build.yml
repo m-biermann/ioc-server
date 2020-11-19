@@ -201,6 +201,7 @@ jobs:
         Boost_DEBUG: ON
         CC: ${{ steps.vars.outputs.GCC_PATH }}
         CXX: ${{ steps.vars.outputs.GXX_PATH }}
+        ioc-container_DIR: ${{ steps.vars.outputs.LIBS_DIR }}
       # Note the current convention is to use the -S and -B options here to specify source 
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
