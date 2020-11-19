@@ -39,7 +39,7 @@ jobs:
       shell: bash
       run: |
         if [ ${{matrix.os}} = "windows-latest" ]; then
-          boost_loc="${{runner.workspace}}${{ matrix.path-delimiter }}boost_out"
+          boost_loc="$HOME${{ matrix.path-delimiter }}boost_out"
           echo "boost_loc pre: $boost_loc"
           boost_loc="C:/Boost"
           echo "boost_loc post: $boost_loc"
@@ -48,7 +48,7 @@ jobs:
           gxx_loc="$(where g++)"
           gxx_loc="${gxx_loc//\\//}"
         elif [ ${{matrix.os}} = "ubuntu-latest" ]; then
-          boost_loc="${{runner.workspace}}${{ matrix.path-delimiter }}boost_out"
+          boost_loc="$HOME${{ matrix.path-delimiter }}boost_out"
           gcc_loc="$(which gcc)"
           gxx_loc="$(which g++)"
         fi
@@ -132,7 +132,7 @@ jobs:
       id: vars
       shell: bash
       run: |
-        boost_loc="${{runner.workspace}}${{ matrix.path-delimiter }}boost_out"
+        boost_loc="$HOME${{ matrix.path-delimiter }}boost_out"
         libs_loc="${{runner.workspace}}${{ matrix.path-delimiter }}libs"
         if [ ${{matrix.os}} = "windows-latest" ]; then
           gcc_loc="$(where gcc)"
@@ -169,7 +169,7 @@ jobs:
       if: steps.cache.outputs.cache-hit != 'true'
       run: echo "steps.cache.outputs.cache-hit ${{steps.cache.outputs.cache-hit}}"; exit 1
       
-    - name: Download and ioc-container Build.zip
+    - name: Download ioc-container Build.zip
       uses: robinraju/release-downloader@v1
       with:
         tag: v0.1.0-alpha
