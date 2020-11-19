@@ -169,17 +169,18 @@ jobs:
       if: steps.cache.outputs.cache-hit != 'true'
       run: echo "steps.cache.outputs.cache-hit ${{steps.cache.outputs.cache-hit}}"; exit 1
       
-    - name: Download ioc-container Build
-      uses: i3h/download-release-asset@v1.2.0
+    - name: Download and extract(?) ioc-container Build.zip
+      uses: robinraju/release-downloader@v1
       with:
-        owner: m-biermann
-        repo: ioc-container
         tag: v0.1.0-alpha
-        file: Build.zip
-        
-    - name: Extract ioc-container Build
+        fileName: Build.zip
+        repository: m-biermann/ioc-container
+        zipBall: true
+        out-file-path: ${{ steps.vars.outputs.LIBS_DIR }}
+    
+    - name: LIB_DIR contents
       shell: bash
-      run: "tar xzfv ${{runner.workspace}}${{ matrix.path-delimiter }}Build.zip  -C ${{ steps.vars.outputs.LIBS_DIR }}; ls -laR ${{ steps.vars.outputs.BOOST_DIR }}"
+      run: ls -laR ${{ steps.vars.outputs.LIBS_DIR }}
 
     - name: Create Build Environment
       # Some projects don't allow in-source building, so create a separate build directory
